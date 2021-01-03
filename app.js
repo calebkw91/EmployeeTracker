@@ -169,9 +169,64 @@ let addEmployee = async () =>
 
 }
 
-let updateRole = () =>
+let updateRole = async () =>
 {
+    let roles = [];
+    let employees = [];
+    let rolesID = [];
+    let employeesID = [];
+    let employee;
 
+    connection.query("SELECT DISTINCT title, id FROM roles", (err, res) =>
+    {
+        if (err) throw err;
+        rolesID = res;
+        res.forEach(role => roles.push(role.title));
+    });
+
+    connection.query("SELECT * FROM employee", async (err, res) =>
+    {
+        if (err) throw err;
+        employeesID = res;
+        res.forEach(employee => employees.push(employee.first_name + " " + employee.last_name));
+
+        employee = await inquirer.prompt(
+            [{
+                type: "list",
+                message: "Choose employee to modify: ",
+                name: "id",
+                choices: employees
+            },{
+                type: "list",
+                message: "Choose a new role for the employee: ",
+                name: "role_id",
+                choices: roles
+            }]);
+
+        rolesID.forEach(role => 
+        {
+            if(role.title == employee.role_id)
+            {
+                employee.role_id = role.id;
+            }
+        });
+        
+        employeesID.forEach(emp =>
+        {
+            if((emp.first_name + " " + emp.last_name) == (employee.id))
+            {
+                employee.id = emp.id;
+            }
+        });
+
+        let params = [employee.role_id, employee.id];
+    
+        connection.query("UPDATE employee SET role_id = ? WHERE id = ?", params, (err, res) =>
+        {
+            if (err) throw err;
+            viewAll();
+        });
+    });
 }
 
 let addDepartment = () =>
@@ -184,4 +239,4 @@ let addRole = () =>
 
 }
 
-addEmployee();
+updateRole();

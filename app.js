@@ -21,7 +21,7 @@ connection.connect(function(err)
 });
 
 let menu = async () =>
-{
+{   
     const menu = await inquirer.prompt(
         [{
             type: "list",
@@ -29,8 +29,8 @@ let menu = async () =>
             name: "choice",
             choices: [
                 'View all employees',
-                'View all employees by department',
-                'View all employees by manager',
+                'View all departments',
+                'View all roles',
                 'Add employee',
                 'Remove employee',
                 'Update employee role',
@@ -46,11 +46,11 @@ let menu = async () =>
         case 'View all employees':
             viewAll();
             break;
-        case 'View all employees by department':
-            // viewAllByDept();
+        case 'View all departments':
+            viewAllDept();
             break;
-        case 'View all employees by manager':
-            // viewAllByManager();
+        case 'View all roles':
+            viewAllRoles();
             break;
         case 'Add employee':
             addEmployee();
@@ -93,6 +93,7 @@ let viewAll = () =>
     {
         if (err) throw err;
         console.table(res);
+        menu();
     });
 }
 
@@ -162,7 +163,7 @@ let addEmployee = async () =>
     connection.query("INSERT INTO employee SET ?", employee, (err, res) =>
     {
         if (err) throw err;
-        viewAll();
+        menu();
     });
 
 }
@@ -222,7 +223,7 @@ let updateRole = async () =>
         connection.query("UPDATE employee SET role_id = ? WHERE id = ?", params, (err, res) =>
         {
             if (err) throw err;
-            viewAll();
+            menu();
         });
     });
 }
@@ -239,7 +240,7 @@ let addDepartment = async () =>
     connection.query("INSERT INTO department SET ?", department, (err, res) =>
     {
         if (err) throw err;
-        viewAll();
+        menu();
     });
 }
 
@@ -282,8 +283,33 @@ let addRole = async () =>
     connection.query("INSERT INTO roles SET ?", role, (err, res) =>
     {
         if (err) throw err;
-        viewAll();
+        menu();
     });
 }
 
-addRole();
+let viewAllRoles = async () =>
+{
+    connection.query("SELECT title AS 'Title', " +
+                    "salary AS 'Salary', " +
+                    "dpname AS 'Department' " +
+                    "FROM roles " +
+                    "INNER JOIN department ON roles.department_id = department.id", (err, res) => 
+    {
+        if (err) throw err;
+        console.table(res);
+        menu();
+    });
+}
+
+let viewAllDept = async () =>
+{
+    connection.query("SELECT dpname AS 'Departments' " +
+                    "FROM department ", (err, res) => 
+    {
+        if (err) throw err;
+        console.table(res);
+        menu();
+    });
+}
+
+viewAll();

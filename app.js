@@ -158,8 +158,6 @@ let addEmployee = async () =>
             employee.manager_id = null;
         }
     });
-
-    newEmployee = [employee.first_name, employee.last_name, employee.role, employee.manager];
     
     connection.query("INSERT INTO employee SET ?", employee, (err, res) =>
     {
@@ -229,9 +227,20 @@ let updateRole = async () =>
     });
 }
 
-let addDepartment = () =>
+let addDepartment = async () =>
 {
-
+    const department = await inquirer.prompt(
+        [{
+            type: "input",
+            message: "Department name? ",
+            name: "dpname"
+        }]);
+    
+    connection.query("INSERT INTO department SET ?", department, (err, res) =>
+    {
+        if (err) throw err;
+        viewAll();
+    });
 }
 
 let addRole = () =>
@@ -239,4 +248,4 @@ let addRole = () =>
 
 }
 
-updateRole();
+addDepartment();

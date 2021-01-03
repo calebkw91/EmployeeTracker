@@ -80,11 +80,49 @@ let menu = async () =>
 
 let viewAll = () => 
 {
-
+    connection.query("SELECT employee.id AS 'ID', " +
+                    "CONCAT(employee.first_name, ' ', employee.last_name) AS 'Employee', " +
+                    "roles.title AS 'Title', " +
+                    "department.dpname AS 'Department', " +
+                    "roles.salary AS 'Salary', " +
+                    "CONCAT(e.first_name, ' ', e.last_name) AS 'Manager' " +
+                    "FROM employee " +
+                    "INNER JOIN roles ON employee.role_id = roles.id " +
+                    "INNER JOIN department ON department_id = department.id " +
+                    "LEFT JOIN employee e ON employee.manager_id = e.id", (err, res) => 
+    {
+        if (err) throw err;
+        console.table(res);
+    });
 }
 
-let addEmployee = () =>
+let addEmployee = async () =>
 {
+    let roles = [];
+    let managers = [];
+
+    connection.query("SELECT DISTINCT title, id FROM roles", (err, res) =>
+    {
+        if (err) throw err;
+        res.ForEach(role => roles.push(role.title));
+    });
+
+    connection.query("SELECT * FROM employee", (err, res) =>
+    {
+        if (err) throw err;
+        res.ForEach(employee => managers.push(employee.first_name + " " + employee.last_name));
+    });
+
+    const employee = await inquirer.prompt(
+        [{
+            type: "input",
+            message: "First name? ",
+            name: "first_name"
+        },{
+            type: "input",
+            message: "Last name? ",
+            name: "last_name"
+        }]);
 
 }
 
@@ -100,5 +138,7 @@ let addDepartment = () =>
 
 let addRole = () =>
 {
-    
+
 }
+
+viewAll();

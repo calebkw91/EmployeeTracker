@@ -243,9 +243,47 @@ let addDepartment = async () =>
     });
 }
 
-let addRole = () =>
+let addRole = async () =>
 {
+    let departments = [];
+    let departmentsID = [];
 
+    connection.query("SELECT DISTINCT dpname, id FROM department", (err, res) =>
+    {
+        if (err) throw err;
+        departmentsID = res;
+        res.forEach(department => departments.push(department.dpname));
+    });
+
+    const role = await inquirer.prompt(
+        [{
+            type: "input",
+            message: "Role title? ",
+            name: "title"
+        },{
+            type: "input",
+            message: "Salary? ",
+            name: "salary"
+        },{
+            type: "list",
+            message: "Department? ",
+            name: "department_id",
+            choices: departments
+        }]);
+
+    departmentsID.forEach(department => 
+    {
+        if(department.dpname == role.department_id)
+        {
+            role.department_id = department.id;
+        }
+    });
+    
+    connection.query("INSERT INTO roles SET ?", role, (err, res) =>
+    {
+        if (err) throw err;
+        viewAll();
+    });
 }
 
-addDepartment();
+addRole();

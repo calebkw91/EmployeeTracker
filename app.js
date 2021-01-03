@@ -100,17 +100,22 @@ let addEmployee = async () =>
 {
     let roles = [];
     let managers = [];
+    let rolesID = [];
+    let managersID = [];
 
     connection.query("SELECT DISTINCT title, id FROM roles", (err, res) =>
     {
         if (err) throw err;
-        res.ForEach(role => roles.push(role.title));
+        rolesID = res;
+        res.forEach(role => roles.push(role.title));
     });
 
     connection.query("SELECT * FROM employee", (err, res) =>
     {
         if (err) throw err;
-        res.ForEach(employee => managers.push(employee.first_name + " " + employee.last_name));
+        managersID = res;
+        res.forEach(employee => managers.push(employee.first_name + " " + employee.last_name));
+        managers.push("None");
     });
 
     const employee = await inquirer.prompt(
@@ -122,7 +127,45 @@ let addEmployee = async () =>
             type: "input",
             message: "Last name? ",
             name: "last_name"
+        },{
+            type: "list",
+            message: "Role? ",
+            name: "role_id",
+            choices: roles
+        },{
+            type: "list",
+            message: "Manager? ",
+            name: "manager_id",
+            choices: managers
         }]);
+
+    rolesID.forEach(role => 
+    {
+        if(role.title == employee.role_id)
+        {
+            employee.role_id = role.id;
+        }
+    });
+    
+    managersID.forEach(manager =>
+    {
+        if((manager.first_name + " " + manager.last_name) == (employee.manager_id))
+        {
+            employee.manager_id = manager.id;
+        }
+        else if(employee.manager_id == "None")
+        {
+            employee.manager_id = null;
+        }
+    });
+
+    newEmployee = [employee.first_name, employee.last_name, employee.role, employee.manager];
+    
+    connection.query("INSERT INTO employee SET ?", employee, (err, res) =>
+    {
+        if (err) throw err;
+        viewAll();
+    });
 
 }
 
@@ -141,4 +184,4 @@ let addRole = () =>
 
 }
 
-viewAll();
+addEmployee();

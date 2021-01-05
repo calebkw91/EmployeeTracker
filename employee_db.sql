@@ -12,7 +12,7 @@ CREATE TABLE department (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE emp_role (
+CREATE TABLE roles (
   id int NOT NULL AUTO_INCREMENT,
   title VARCHAR(30) NOT NULL,
   salary DECIMAL NOT NULL,
@@ -35,7 +35,7 @@ VALUES ('Sales'),
        ('Financial'),
        ('Legal');
        
-INSERT INTO emp_role (title, salary, department_id)
+INSERT INTO roles (title, salary, department_id)
 VALUES ('Sales Lead', '100000', 1),
 	   ('Salesperson', '80000', 1),
        ('Lead Engineer', '150000', 2),
@@ -51,5 +51,5 @@ VALUES ('John', 'Doe', 1, 3),
        ('Kevin', 'Tupik', 4, 3),
        ('Malia', 'Brown', 5, null),
        ('Sarah', 'Lourd', 6, null),
-       ('Tom', 'Allen', 7, 7),
+       ('Tom', 'Allen', 7, 6),
        ('Tammer', 'Galal', 4, 6);

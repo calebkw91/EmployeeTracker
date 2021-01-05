@@ -32,9 +32,7 @@ let menu = async () =>
                 'View all departments',
                 'View all roles',
                 'Add employee',
-                'Remove employee',
                 'Update employee role',
-                'Update employee manager',
                 'Add department',
                 'Add role',
                 'Exit'

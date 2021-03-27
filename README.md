@@ -1,5 +1,7 @@
 # EmployeeTracker
 
+![screenshot](images/homepage_screenshot.png "Homepage Screenshot")
+
 ## Description
 This app will track the a company's employees, departments, and job titles in a SQL database and allow the user to make basic changes.
 
